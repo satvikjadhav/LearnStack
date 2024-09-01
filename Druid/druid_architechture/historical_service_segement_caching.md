@@ -2,6 +2,10 @@
 
 1. Segment Cache and Memory Mapping:
    The Historical service in Apache Druid uses a technique called memory mapping for its segment cache. This means it can load parts of data files (segments) directly into the computer's memory, making it faster to access this data when needed.
+    - What is memory mapping?
+        - Memory mapping is a technique where a file or file-like resource is mapped directly into the memory address space of a process. This creates a direct byte-for-byte correlation between the file and a portion of the process's address space.
+    - How Druid uses memory mapping?
+        - In Druid, when a Historical node loads a data segment, it doesn't read the entire segment into memory. Instead, it memory-maps the segment files. This means the operating system maps the segment files into the virtual memory space of the Druid process.
 
 2. Memory Usage:
    This cache uses the operating system's memory, not just the memory allocated to the Java program (JVM) running Druid. It's affected by various factors like the size of the Historical JVM, memory buffers, and other programs running on the same computer.

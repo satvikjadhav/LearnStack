@@ -15,7 +15,8 @@
 - With ZooKeeper: Announce availability and segment serving status
 
 ### Key Concepts:
-- Segment: The core data structure in Druid, containing timestamped data
+- Segment: The core data structure in Druid, containing timestamped data. 
+- Segments on disk for Historical services provide the low latency querying performance Druid is known for.
 - Tier: Historical nodes are grouped into tiers, often based on hardware capabilities
 
 ## 2. Broker Nodes

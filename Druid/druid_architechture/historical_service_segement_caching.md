@@ -15,7 +15,7 @@
 5. Additional Caching:
    This memory-mapped cache is just one layer of caching. Druid also has other caches at the query level for further performance improvements.
 
-##Practical Example
+## Practical Example
 
 Let's say you're running a large e-commerce website and using Druid to analyze sales data. You have a Historical node with 64GB of RAM, and you've set `druid.server.maxSize` to 48GB.
 

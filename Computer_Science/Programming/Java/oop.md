@@ -40,7 +40,7 @@ method(new B()); // Passing as parameter OK
 #### Static Inheritance
 Static method can be inherited similar to normal methods, however unlike normal methods it is impossible to create "abstract" methods in order to force static method overriding. Writing a method with the same signature as a static method in a super class appears to be a form of overriding, but really this simply creates a new function hides the other.
 
-NUnlike normal inheritance, in static inheritance methods are not hidden. But classes do inherit static methods if no methods with the same signature are found in the subclass. If two method's signatures vary, both methods can be run from the subclass, even if the name is the same.
+Unlike normal inheritance, in static inheritance methods are not hidden. But classes do inherit static methods if no methods with the same signature are found in the subclass. If two method's signatures vary, both methods can be run from the subclass, even if the name is the same.
 
 Static fields hide each other in a similar way
 
@@ -111,10 +111,55 @@ Final methods are typically used when you want to restrict what a subclass can c
    - They enable you to achieve multiple inheritance of type (not implementation).
    - They help in designing loosely coupled systems, making it easier to change implementations.
 
-## Abstract Classes:
-   - Cannot be instantiated, serve as base classes for other classes.
-   - Can have both abstract methods (without implementation) and concrete methods (with implementation).
-   - Abstract classes are used when you want to provide a common base implementation for a group of related classes.
+A Java class can implement multiple interfaces.
+```java
+public interface NoiseMaker {
+    String noise = "Making Noise"; // interface variables are public static final by default
+
+    String makeNoise(); //interface methods are public abstract by default
+}
+
+public interface FoodEater {
+    void eat(Food food);
+}
+
+public class Cat implements NoiseMaker, FoodEater { 
+    @Override
+    public String makeNoise() {
+        return "meow";
+    }
+
+    @Override //This forces the compiler to check that we are overriding and prevents the program from defining a new method or messing up the method signature.
+    public void eat(Food food) {
+        System.out.println("meows appreciatively");
+    }
+}
+
+NoiseMaker noiseMaker = new Cat(); // Valid
+FoodEater foodEater = new Cat(); // Valid
+Cat cat = new Cat(); // valid
+
+Cat invalid1 = new NoiseMaker(); // Invalid
+Cat invalid2 = new FoodEater(); // Invalid
+```
+
+1. All variables declared in an interface are `public static final`.
+2. All methods declared in an interface methods are `public abstract` (This statement is valid only through Java 7. From Java 8, you are allowed to have methods in an interface, which need not be abstract; such methods are known as default methods.
+3. Interfaces cannot be declared as `final`.
+4. If more than one interface declares a method that has identical signature, then effectively it is treated as only one method and you cannot distinguish from which interface method is implemented. 
+5. A corresponding InterfaceName.class file would be generated for each interface, upon compilation.
+
+### Extending an interface
+```java
+public interface BasicResourceService {
+    Resource getResource();
+}
+
+public interface ExtendedResourceService extends BasicResourceService {
+    void updateResource(Resource resource);
+}
+```
+Now a class implementing `ExtendedResourceService` will need to implement both `getResource()` and `updateResource()`.
 
 ## Encapsulation:
    - Bundling of data and methods that operate on that data within a single unit (class).

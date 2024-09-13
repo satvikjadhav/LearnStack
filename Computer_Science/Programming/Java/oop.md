@@ -100,6 +100,175 @@ Final methods are typically used when you want to restrict what a subclass can c
    - Method overriding (like `startEngine()` in `ElectricCar`) is a form of polymorphism.
    - The `@Override` annotation ensures we're correctly overriding a superclass method.
 
+### Method Overriding
+Method overriding is the ability of subtypes to redefine (override) the behavior of their supertypes.
+
+In Java, this translates to subclasses overriding the methods defined in the super class. In Java, all non-primitive variables are actually `references`, which are akin to pointers to the location of the actual object in memory. The `references` only have one type, which is the type they were declared with. However, they can point to an object of either their declared type or any of its subtypes.
+
+When a method is called on a `reference`, the corresponding method of the actual object being pointed to is invoked.
+
+Different types of overriding:
+1. Base class provides no implementation and sub-class has to override complete method - (abstract)
+2. Base class provides default implementation and sub-class can change the behaviour
+3. Sub-class adds extension to base class implementation by calling `super.methodName()` as first statement
+4. Base class defines structure of the algorithm (Template method) and sub-class will override a part of algorithm
+
+Code example:
+
+```java
+import java.util.HashMap;
+
+abstract class Game implements Runnable{
+
+    protected boolean runGame = true;
+    protected Player player1 = null;
+    protected Player player2 = null;
+    protected Player currentPlayer = null;
+    
+    public Game(){
+        player1 = new Player("Player 1");
+        player2 = new Player("Player 2");
+        currentPlayer = player1;
+        initializeGame();
+    }
+
+    /* Type 1: Let subclass define own implementation. Base class defines abstract method to force
+        sub-classes to define implementation    
+    */
+    
+    protected abstract void initializeGame();
+    
+    /* Type 2: Sub-class can change the behaviour. If not, base class behaviour is applicable */
+    protected void logTimeBetweenMoves(Player player){
+        System.out.println("Base class: Move Duration: player.PlayerActTime - player.MoveShownTime");
+    }
+    
+    /* Type 3: Base class provides implementation. Sub-class can enhance base class implementation by calling
+        super.methodName() in first line of the child class method and specific implementation later */
+    protected void logGameStatistics(){
+        System.out.println("Base class: logGameStatistics:");
+    }
+    /* Type 4: Template method: Structure of base class can't be changed but sub-class can some part of behaviour */
+    protected void runGame() throws Exception{
+        System.out.println("Base class: Defining the flow for Game:");    
+        while (runGame) {
+            /*
+            1. Set current player
+            2. Get Player Move
+            */
+            validatePlayerMove(currentPlayer);    
+            logTimeBetweenMoves(currentPlayer);
+            Thread.sleep(500);
+            setNextPlayer();
+        }
+        logGameStatistics();
+    }
+    /* sub-part of the template method, which define child class behaviour */
+    protected abstract void validatePlayerMove(Player p);
+    
+    protected void setRunGame(boolean status){
+        this.runGame = status;
+    }
+    public void setCurrentPlayer(Player p){
+        this.currentPlayer = p;
+    }
+    public void setNextPlayer(){
+        if (currentPlayer == player1) {
+            currentPlayer = player2;
+        }else{
+            currentPlayer = player1;
+        }
+    }
+    public void run(){
+        try{
+            runGame();
+        }catch(Exception err){
+            err.printStackTrace();
+        }
+    }
+}
+
+class Player{
+    String name;
+    Player(String name){
+        this.name = name;
+    }
+    public String getName(){
+        return name;
+    }
+}
+
+/* Concrete Game implementation  */
+class Chess extends Game{
+    public Chess(){
+        super();
+    }
+    public void initializeGame(){
+        System.out.println("Child class: Initialized Chess game");
+    }
+    protected void validatePlayerMove(Player p){
+        System.out.println("Child class: Validate Chess move:" + p.getName());
+    }
+    protected void logGameStatistics(){
+        super.logGameStatistics();
+        System.out.println("Child class: Add Chess specific logGameStatistics:");
+    }
+}
+class TicTacToe extends Game{
+    public TicTacToe(){
+        super();
+    }
+    public void initializeGame(){
+        System.out.println("Child class: Initialized TicTacToe game");
+    }
+    protected void validatePlayerMove(Player p){
+        System.out.println("Child class: Validate TicTacToe move:" + p.getName());
+    }
+}
+
+public class Polymorphism{
+    public static void main(String args[]){
+        try{
+        
+            Game game = new Chess();
+            Thread t1 = new Thread(game);
+            t1.start();
+            Thread.sleep(1000);
+            game.setRunGame(false);
+            Thread.sleep(1000);
+                        
+            game = new TicTacToe();
+            Thread t2 = new Thread(game);
+            t2.start();
+            Thread.sleep(1000);
+            game.setRunGame(false);
+        
+        }catch(Exception err){
+            err.printStackTrace();
+        }        
+    }
+}
+```
+
+#### Rules to keep in mind
+
+To override a method in the subclass, the overriding method (i.e. the one in the subclass) MUST HAVE:
+
+    - same name
+    - same return type in case of primitives (a subclass is allowed for classes, this is also known as covariant return types).
+    - same type and order of parameters
+    - it may throw only those exceptions that are declared in the throws clause of the superclass's method or exceptions that are subclasses of the declared exceptions. It may also choose NOT to throw any exception. The names of the parameter types do not matter. For example, void methodX(int i) is same as void methodX(int k)
+    - We are unable to Override final or Static methods. Only thing that we can do change only method body
+
+### Method Overloading
+Method overloading, also known as function overloading, is the ability of a class to have multiple methods with the same name, granted that they differ in either number or type of arguments. This type of polymorphism is called static or compile time polymorphism 
+
+Compiler checks **method signature** for method overloading.
+
+Overloaded methods may be static or non-static. This also does not effect method overloading.
+
+Also if we change the return type of method, we are unable to get it as method overloading.
+
 ## Interfaces:
    - Define a contract of methods that implementing classes must provide.
    - Interfaces only declare method signatures, not implementations.

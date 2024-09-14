@@ -121,16 +121,51 @@
 - With Peons: Receive segments from batch ingestion tasks
 
 ## 8. Metadata Store
+### What is Stored in the Metadata Database?
 
-### Functions:
-- Store metadata about segments, datasources, and tasks
-- Maintain cluster configuration and state
-- Support for various databases (PostgreSQL, MySQL, Derby)
+1. **Datasource Metadata**:
+   - Information about datasources (tables) including their schemas, dimensions, and metrics.
 
-### Interactions:
-- With Coordinator: Store and retrieve segment and datasource metadata
-- With Overlord: Store and retrieve task metadata
-- With all nodes: Provide cluster configuration information
+2. **Segment Metadata**:
+   - Details about segments, including their locations, intervals, and indices.
+
+3. **Task Metadata**:
+   - Information about tasks that have been scheduled or executed, including their status and progress.
+
+4. **Supervisors Metadata**:
+   - Metadata about data ingestion tasks, including configurations and statuses for real-time ingestion supervisors.
+
+5. **Coordinator Metadata**:
+   - Information related to data distribution, including segment assignments and load statuses.
+
+6. **Rules and Policies**:
+   - Data related to data retention policies, compaction rules, and other operational policies.
+
+### Which Services Access the Metadata Database and For What Purpose?
+
+1. **Coordinator**:
+   - **Purpose**: Manages the distribution of data and balancing of segments across the Druid cluster. It reads and writes to the metadata database to track segment availability, data load status, and to enforce data retention policies.
+
+2. **Overlord**:
+   - **Purpose**: Oversees task management and execution. It interacts with the metadata database to track the status of tasks, their configurations, and their progress.
+
+3. **Broker**:
+   - **Purpose**: Handles query routing and aggregation. While the broker service doesn't typically perform direct writes to the metadata database, it queries metadata to understand datasource schemas and segment locations for efficient query execution.
+
+4. **Historical**:
+   - **Purpose**: Serves historical data segments. Historical nodes use metadata to determine which segments they should serve and their configurations.
+
+5. **Middle Manager**:
+   - **Purpose**: Manages real-time ingestion tasks. It interacts with the metadata database to track the status of tasks and their progress.
+
+6. **Supervisor**:
+   - **Purpose**: Manages real-time ingestion jobs. Supervisors use metadata to understand the state of their tasks and to coordinate ingestion operations.
+
+### How Metadata is Utilized:
+
+- **Coordination and Balancing**: The Coordinator uses metadata to manage and balance segment distribution across the cluster, ensuring that the data is evenly spread and meets the retention policies.
+- **Task Management**: The Overlord and Supervisors use metadata to track and manage the lifecycle of tasks, including scheduling, execution, and completion.
+- **Query Execution**: Brokers use metadata to route queries to the appropriate segments and to understand the schema of the datasources involved.
 
 ## 9. ZooKeeper
 

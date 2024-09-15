@@ -21,6 +21,40 @@ ZooKeeper is a critical component in Apache Druid's architecture, serving as a d
 - **Historical Node Discovery**: Coordinators use ZooKeeper to discover available Historical nodes.
 - **Load Queue**: ZooKeeper stores information about segments being loaded or dropped by Historical nodes.
 
+   ### Segment load/drop protocol between Coordinator and Historical
+
+   The `loadQueuePath` is used for this.
+
+   When the [Coordinator](https://druid.apache.org/docs/latest/design/coordinator) decides that a [Historical](https://druid.apache.org/docs/latest/design/historical) process should load or drop a segment, it writes an ephemeral znode to
+
+   ```
+   ${druid.zk.paths.loadQueuePath}/_host_of_historical_process/_segment_identifier
+   ```
+
+   In this path:
+
+   - `_host_of_historical_process` represents the specific Historical node.
+   - `_segment_identifier` is the unique identifier for the segment that needs to be loaded or dropped.
+
+   **Ephemeral znodes** are temporary and exist only while the session with Zookeeper is active. If the Historical node disconnects, the znode is automatically deleted by Zookeeper.
+
+   This znode will contain a payload that indicates to the Historical process what it should do with the given segment. When the Historical process is done with the work, it will delete the znode in order to signify to the Coordinator that it is complete.
+
+   ### Process Workflow
+
+   1. **Coordinator Action**:
+      - **Decides to Load/Drop Segment**: Based on segment balancing needs, data retention policies, or other factors, the Coordinator determines that a Historical node should load or drop a segment.
+      - **Writes Znode**: The Coordinator creates an ephemeral znode at the path `${druid.zk.paths.loadQueuePath}/_host_of_historical_process/_segment_identifier`, with the payload indicating the required action.
+
+   2. **Historical Node Action**:
+      - **Receives Instruction**: The Historical node monitors the `loadQueuePath` for any new znodes.
+      - **Processes Instruction**: Upon detecting a new znode, the Historical node reads the payload and performs the specified action (loading or dropping the segment).
+      - **Deletes Znode**: After completing the action, the Historical node deletes the znode to notify the Coordinator that the task is finished.
+
+   3. **Coordinator Monitoring**:
+      - **Tracks Progress**: The Coordinator can monitor the presence or absence of these znodes to determine if Historical nodes are processing the instructions as expected.
+      - **Handles Errors**: If a znode is not removed after a reasonable time, the Coordinator might need to take corrective action or retry the instruction.
+
 ### 2. Overlord Nodes
 - **Leader Election**: Similar to Coordinators, ZooKeeper manages Overlord leader election.
 - **MiddleManager Discovery**: Overlords use ZooKeeper to find available MiddleManagers for task assignment.
@@ -33,6 +67,34 @@ ZooKeeper is a critical component in Apache Druid's architecture, serving as a d
 ### 4. Historical Nodes
 - **Node Registration**: Historical nodes register themselves in ZooKeeper when they join the cluster.
 - **Segment Serving Information**: They update ZooKeeper with information about which segments they are currently serving.
+
+   ### Segment "publishing" protocol from Historical and Realtime
+
+   The `announcementsPath` and `servedSegmentsPath` are used for this.
+
+   All [Historical](https://druid.apache.org/docs/latest/design/historical) processes publish themselves on the `announcementsPath`, specifically, they will create an ephemeral znode at
+
+   ```
+   ${druid.zk.paths.announcementsPath}/${druid.host}
+   ```
+
+   Which signifies that they exist. They will also subsequently create a permanent znode at
+
+   ```
+   ${druid.zk.paths.servedSegmentsPath}/${druid.host}
+   ```
+
+   And as they load up segments, they will attach ephemeral znodes that look like
+
+   ```
+   ${druid.zk.paths.servedSegmentsPath}/${druid.host}/_segment_identifier_
+   ```
+
+   Processes like the [Coordinator](https://druid.apache.org/docs/latest/design/coordinator) and [Broker](https://druid.apache.org/docs/latest/design/broker) can then watch these paths to see which processes are currently serving which segments.
+
+   - **Coordinator**: Watches these paths to manage and balance segments. It needs to know which Historical nodes are active and what segments they are serving to make decisions about data distribution and segment replication.
+
+   - **Broker**: Uses this information to route queries to the appropriate nodes. When a query is received, it needs to know which nodes hold the relevant segments to direct the query correctly.
 
 ### 5. MiddleManager Nodes
 - **Node Registration**: MiddleManagers register their availability in ZooKeeper.

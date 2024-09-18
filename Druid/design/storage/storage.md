@@ -1,6 +1,6 @@
 # Storage overview
 
-Druid stores data in datasources, which are similar to tables in a traditional RDBMS. Each datasource is partitioned by time and, optionally, further partitioned by other attributes. Each time range is called a chunk (for example, a single month, if your datasource is partitioned by month). Within a chunk, data is partitioned into one or more segments. Each segment is a single file, typically comprising up to a few million rows of data. Since segments are organized into time chunks, it's sometimes helpful to think of segments as living on a timeline like the following. 
+Druid stores data in datasources, which are similar to tables in a traditional RDBMS. Each datasource is partitioned by time and, optionally, further partitioned by other attributes. Each time range is called a chunk (for example, a single month, if the datasource is partitioned by month). Within a chunk, data is partitioned into one or more segments. Each segment is a single file, typically comprising up to a few million rows of data. Since segments are organized into time chunks, it's sometimes helpful to think of segments as living on a timeline like the following. 
 
 A datasource can be made up of just a few segments or even tens or hundreds of thousands of segements. Each segment is created by a MiddleManager as mutable and uncommitted. Data is queryable as soon as it is added to an uncommitted segment
 
@@ -57,7 +57,7 @@ clarity-cloud0_2018-05-21T16:00:00.000Z_2018-05-21T17:00:00.000Z_2018-05-21T15:5
 ## Segment versioning
 In Apache Druid, version numbers enable multi-version concurrency control (MVCC) for managing data updates. Here’s how it works:
 
-- **Single Version for Appends:** If you only append data, there’s a single version per time chunk, as no overwriting occurs.
+- **Single Version for Appends:** If only append operation is done, there’s a single version per time chunk, as no overwriting occurs.
 
 - **Handling Overwrites:** When data is overwritten, Druid creates a new set of segments with a higher version number for the same datasource and time interval. This indicates to Druid that the new version should replace the old one.
 

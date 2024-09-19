@@ -24,12 +24,12 @@ The Coordinator service is primarily responsible for segment management and dist
 ## Cleaning Up Overshadowed Segments
 
 - **Process Overview**: 
-  - During each run, the Coordinator compares the database's used segments with those currently served by Historical nodes.
+  - On each run, the Coordinator compares the set of used segments in the database with the segments served by some Historical nodes in the cluster.
 
 - **Actions Taken**:
   - Sends requests to Historical nodes to unload:
     - Unused segments
-    - Segments removed from the database
+    - Segments that are removed from the database
 
 - **Overshadowed Segments**:
   - Segments are marked as unused if their versions are outdated and have been replaced by newer segments.
@@ -97,7 +97,7 @@ The segment search policy determines which segments need compaction during each 
 
 - **Conditions for Compaction**:
   A set of segments qualifies for compaction if:
-  1. The total size of segments in the time chunk is less than or equal to the configured `inputSegmentSizeBytes`.
+  1. The total size of segments in the time chunk is less than or equal to the configured `inputSegmentSizeBytes` (default = 100 TB).
   2. Segments have not been compacted yet or their compaction spec has been updated since the last compaction (e.g., `maxTotalRows` or `indexSpec`).
 
 - **Example Scenario**:

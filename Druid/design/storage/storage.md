@@ -107,10 +107,10 @@ In Apache Druid, ingestion and querying are architecturally separate, affecting 
      - **Idempotent**: Repeated executions do not cause duplicate data due to synchronized updates of stream offsets and segment metadata.
 
    - **Hadoop-Based Batch Ingestion**:
-     - **Idempotent**: If input sources are not the same Druid datasource being ingested into. Running the same task twice without overwriting ensures no duplicates.
+     - **Idempotent**: This process is idempotent unless one of your input sources is the same Druid datasource that you are ingesting into. In this case, running the same task twice is non-idempotent, because you are adding to existing data instead of overwriting it.
 
    - **Native Batch Ingestion**:
-     - **Idempotent**: Unless `appendToExisting` is true or if input sources include the same Druid datasource being ingested into. If either condition is true, re-running the task could result in data duplication.
+     - **Idempotent**: native batch ingestion is idempotent unless the `appendToExisting` option is true or if the input sources is the same Druid datasource that we are ingesting into. In those cases, running the task multiple times results in non-idempotent behavior, as it adds to existing data rather than overwriting it.
 
 On the query side, Apache Druid ensures consistency and performance through its handling of segment availability and atomic replacement:
 

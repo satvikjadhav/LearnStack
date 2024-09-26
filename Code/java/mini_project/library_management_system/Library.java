@@ -15,6 +15,10 @@ public class Library {
         this.books = new ArrayList<>();
     }
 
+    public String getLibraryName() {
+        return this.name;
+    }
+
     public void addBook(Book book) {
         books.add(book);
         System.out.println("Added book: " + book.getTitle());

@@ -94,6 +94,77 @@ Immutable classes should also be declared as `final`. An immutable class is one 
 Final methods are typically used when you want to restrict what a subclass can change in a class without forbidding subclasses entirely
 
 
+### Reference Type in Inheritance
+**Reference Type**: A variable of a superclass type can reference an object of a subclass type. Consequently, the variable can only access methods and properties defined in the superclass, unless those methods are overridden in the subclass.
+
+```java
+class User {
+    private String id;
+
+    public User(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+}
+
+class Student extends User {
+    private String major;
+
+    public Student(String id, String major) {
+        super(id);
+        this.major = major;
+    }
+
+    @Override
+    public String getId() {
+        return "Student ID: " + super.getId();
+    }
+
+    public String getMajor() {
+        return major;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        User std = new Student("S123", "Computer Science");
+
+        // Accessing overridden method in Student
+        System.out.println("ID: " + std.getId());
+
+        // Downcasting to access Student-specific method
+        if (std instanceof Student student) {
+            System.out.println("Major: " + student.getMajor());
+        }
+    }
+}
+```
+**Polymorphism**: Reference types play a crucial role in polymorphism, allowing objects of different subclasses to be treated as instances of a superclass.
+
+**What is Upcasting?**: Upcasting occurs when a subclass object is assigned to a variable of its superclass type. This allows for more general code that can operate on various subclasses.
+```java
+User std = new Student("S123", "Computer Science");
+```
+**Behavior**: The variable `std` can only access methods defined in `User`, but if methods are overridden in `Student`, those overridden methods will be called.
+- We can call `std.getId()`, which will invoke the overridden method in the `Student` class, outputting `"Student ID: S123"`.
+- We **cannot** call `std.getMajor()` because `std` is of type `User`, which does not have a `getMajor()` method. This results in a compile-time error if you try to uncomment that line.
+
+**What is Downcasting?**: Downcasting is when a superclass reference is converted back to a subclass reference, allowing access to subclass-specific methods.
+```java
+if (std instanceof Student) {
+    Student student = (Student) std; // Downcasting
+    System.out.println(student.getMajor());
+}
+```
+So in order to access the methods of the Student class, we can use downcasting. 
+- The `instanceof` check ensures that `std` is indeed a `Student`.
+- We then downcast `std` to `Student` using `(Student) std`, allowing you to call `getMajor()`.
+
+**Importance of Safety Checks**: Always use the `instanceof` operator to check the actual object type before downcasting to prevent `ClassCastException`.
+
 
 ## Polymorphism:
    - Allows objects of different types to be treated as objects of a common superclass.

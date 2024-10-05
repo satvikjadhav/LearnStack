@@ -4,6 +4,18 @@
    - Classes encapsulate data (fields) and behavior (methods).
    - The `Car` class demonstrates encapsulation by using private fields and public methods.
 
+Every Java program starts execution from the `main` method. It must be declared as `public static void main(String[] args)`.
+
+1. **public**: This is an access modifier that allows the `main` method to be accessible from anywhere, including the Java Virtual Machine (JVM), which is what runs your Java application.
+
+2. **static**: This keyword means that the method belongs to the class itself rather than to instances of the class. This allows the JVM to call the `main` method without needing to create an instance of the class.
+
+3. **void**: This indicates that the method does not return any value. It's just executed for its side effects.
+
+4. **main**: This is the name of the method. The JVM looks specifically for a method named `main` when starting a Java application.
+
+5. **String[] args**: This parameter is an array of `String` objects. It holds any command-line arguments that are passed to the program when it is executed. For example, if you run your program from the command line like this:
+
 ## Inheritance
 - Allows a class to inherit properties and methods from another class.
 - `ElectricCar extends Car` means `ElectricCar` inherits from `Car`.

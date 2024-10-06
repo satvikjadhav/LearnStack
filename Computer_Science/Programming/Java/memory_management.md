@@ -20,7 +20,7 @@ The JVM is an abstract computing machine that provides a runtime environment for
 - Memory is allocated and deallocated automatically as methods are called and return
 - The stack operates on a Last In, First Out (LIFO) principle. Each time a method is called, a new frame is pushed onto the stack. When the method completes, the frame is popped off. This block holds:
     - References to objects that are stored in the heap.
-    - Primitive local variables (e.g., `int`, `char`, `float`).
+    - Primitive local variables (e.g., `int`, `char`, `float`), method's parameters, return address, and other data necessary for the method's execution.
 - Faster memory allocation compared to heap since data allocation and deallocation happen automatically as methods are executed and returned
 - Limited in size. Stack overflow errors occur when there are too many method calls (e.g., excessive recursion)
 
@@ -35,6 +35,7 @@ public void myMethod() {
 ### Heap
 - Stores objects and arrays: Objects that are created using the new keyword are stored here
 - Objects in the heap remain in memory as long as there is a reference pointing to them
+- Class variables are stored in the heap (which is shared among all threads)
 - Shared among all threads in a Java application. Objects in the heap are globally accessible as long as they are referenced by a variable or an object
 - Memory is allocated when objects are created and deallocated by the garbage collector
 - The heap is generally larger than the stack and can grow or shrink dynamically

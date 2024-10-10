@@ -401,6 +401,32 @@ Cat invalid2 = new FoodEater(); // Invalid
 4. If more than one interface declares a method that has identical signature, then effectively it is treated as only one method and you cannot distinguish from which interface method is implemented. 
 5. A corresponding InterfaceName.class file would be generated for each interface, upon compilation.
 
+You're right to note that static methods in Java are typically associated with classes. However, interfaces in Java can also contain static methods, which can be a bit confusing. Here's how it works:
+
+### Static Methods in Interfaces
+
+**Belong to the Interface, Not Instances**: Static methods in an interface belong to the interface itself rather than to instances of classes that implement the interface. This means you can call a static method directly on the interface without needing an instance.
+
+```java
+public interface MathOperations {
+    static int add(int a, int b) {
+        return a + b;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        int sum = MathOperations.add(5, 10); // Calling the static method on the interface
+        System.out.println("Sum: " + sum);
+    }
+}
+```
+**Usage**: Static methods in interfaces are useful for utility or helper methods that are relevant to the interface but do not depend on instance data. This allows you to group related methods together without having to create a separate class.
+
+**No Access to Instance Methods or Fields**: Static methods in interfaces cannot access instance methods or instance variables of implementing classes. They can only interact with static fields or other static methods defined in the interface.
+
+**Defined in the Interface**: Just like static methods in classes, static methods in interfaces can have a body and can be used for shared functionality.
+
 ### Extending an interface
 ```java
 public interface BasicResourceService {

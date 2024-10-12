@@ -232,6 +232,9 @@ public class MultithreadingConcurrencyExample {
 
         scheduledPool.schedule(() -> System.out.println("Scheduled task executed"), 2, TimeUnit.SECONDS);
 
+        // Run a task at fixed rate
+        scheduledPool.scheduleAtFixedRate(() -> System.out.println("Scheduled task at fixed rate executed"), 0, 2, TimeUnit.SECONDS);
+
         fixedPool.shutdown();
         cachedPool.shutdown();
         scheduledPool.shutdown();
